@@ -6,8 +6,6 @@ from docling.document_converter import DocumentConverter
 from dotenv import load_dotenv
 from lancedb.embeddings import get_registry
 from lancedb.pydantic import LanceModel, Vector
-from google import genai
-import os
 from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 from transformers import AutoTokenizer
 
