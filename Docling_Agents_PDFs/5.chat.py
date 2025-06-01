@@ -2,6 +2,7 @@ import streamlit as st
 import lancedb
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 import os
 
 # Load environment variables
@@ -44,7 +45,7 @@ def get_context(query: str, table, num_results: int = 5) -> str:
         source_parts = []
         if filename:
             source_parts.append(filename)
-        if page_numbers:
+        if page_numbers is not None and len(page_numbers) > 0:
             source_parts.append(f"p. {', '.join(str(p) for p in page_numbers)}")
 
         source = f"\nSource: {' - '.join(source_parts)}"
@@ -52,7 +53,7 @@ def get_context(query: str, table, num_results: int = 5) -> str:
             source += f"\nTitle: {title}"
 
         contexts.append(f"{row['text']}{source}")
-
+        
     return "\n\n".join(contexts)
 
 def get_chat_response(messages, context: str) -> str:
@@ -86,9 +87,9 @@ def get_chat_response(messages, context: str) -> str:
     model = client.models.generate_content_stream(
         model="gemini-2.0-flash-exp",
         contents=full_prompt,
-        generation_config={
-            "temperature": 0.7,
-        }
+        config=types.GenerateContentConfig(
+            temperature=0.7,
+        )
     )
 
     # Use Streamlit's built-in streaming capability
@@ -174,7 +175,7 @@ if prompt := st.chat_input("Ask a question about the document"):
                     <details>
                         <summary>{source}</summary>
                         <div class="metadata">Section: {title}</div>
-                        <div style="margin-top: 8px;">{text}</div>
+                        <div style="margin-top: 8px; color: #000000;">{text}</div>
                     </details>
                 </div>
             """,
